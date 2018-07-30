@@ -1,0 +1,11 @@
+#!/bin/sh
+
+uci -q batch <<-EOF >/dev/null
+	delete ucitrack.@ser2TCP[-1]
+	add ucitrack ser2TCP
+	set ucitrack.@ser2TCP[-1].init=ser2TCP
+	commit ucitrack
+EOF
+
+rm -f /tmp/luci-indexcache
+exit 0

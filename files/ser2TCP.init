@@ -1,0 +1,49 @@
+#!/bin/sh /etc/rc.common
+#
+# Copyright (C) 2015 Jian Chang <aa65535@live.com>
+#
+# This is free software, licensed under the GNU General Public License v3.
+# See /LICENSE for more information.
+#
+
+START=99
+
+start_instance() {
+
+export HOME=/root
+
+	config_get_bool enabled "$1" 'enabled'
+	config_get server_port "$1" 'server_port'
+	config_get server_addr "$1" 'server_addr'
+
+#if [ ! -f $ser2TCP_LOGFILE ]; then
+#	sleep 20	
+#fi
+
+if [ "$enabled" = 1 ]; then
+	/usr/sbin/ser2TCP \
+		${server_addr} \
+		${server_port}
+       
+fi
+
+}
+
+start() {
+	config_load 'ser2TCP'
+	config_foreach start_instance 'ser2TCP'
+}
+
+stop() {
+	for pid in `ps|grep 'bin/ser2TCP'|awk '{print $1}'`
+	do
+   		echo "$pid"
+		kill -9 "$pid"
+	done
+	sleep 2
+}
+
+boot() {
+	sleep 20
+	start
+}
